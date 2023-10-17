@@ -19,6 +19,9 @@ vim.opt.number = true
 -- Copy to system's clipboard by default
 vim.cmd('set clipboard=unnamedplus')
 
+-- Set termguicolors
+vim.cmd('set termguicolors')
+
 -- Set leader key to space
 vim.g.mapleader = ' '
 
@@ -31,6 +34,14 @@ vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true 
 vim.api.nvim_set_keymap('n', '<C-j>', '<C-w>j', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-k>', '<C-w>k', { noremap = true, silent = true })
 vim.api.nvim_set_keymap('n', '<C-l>', '<C-w>l', { noremap = true, silent = true })
+
+-- Map tab key to switch between tabs
+vim.api.nvim_set_keymap('n', '<Tab>', ':tabnext<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<S-Tab>', ':tabprevious<CR>', { noremap = true, silent = true })
+
+-- Map <leader>x or w to close and save buffers 
+vim.api.nvim_set_keymap('n', '<leader>w', ':w<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<leader>x', ':q<CR>', { noremap = true, silent = true })
 
 -- Plugins
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -53,6 +64,17 @@ plugins = {
     'nvim-telescope/telescope.nvim',
     tag = '0.1.4',
     dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('telescope').setup({
+        defaults = {
+          mappings = {
+            i = {
+              ['<CR>'] = 'select_tab',
+            },
+          },
+        },
+      })
+    end,
     init = function() 
       vim.api.nvim_set_keymap('n', '<leader>ff', '<cmd>Telescope find_files<CR>', { noremap = true, silent = true })
       vim.api.nvim_set_keymap('n', '<leader>fw', '<cmd>Telescope live_grep<CR>', { noremap = true, silent = true })
@@ -95,6 +117,21 @@ plugins = {
     build = function()
       require('nvim-treesitter.install').update({ with_sync = true })
     end,
+  },
+  {
+    'NvChad/nvterm',
+    config = function()
+      require('nvterm').setup()
+    end,
+    init = function()
+      local terminal = require('nvterm.terminal')
+      vim.keymap.set({'n', 't'}, '<leader>th', function() terminal.toggle('horizontal') end)
+      vim.keymap.set({'n', 't'}, '<leader>tv', function() terminal.toggle('vertical') end)
+      vim.keymap.set({'n', 't'}, '<leader>i', function() terminal.toggle('float') end)
+    end,
+  },
+  {
+    'savq/melange-nvim'
   }
 }
 
